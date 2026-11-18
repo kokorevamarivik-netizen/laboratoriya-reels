@@ -1,0 +1,386 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<title>Лаборатория пробных рилс · Метод Родочинской</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=Unbounded:wght@600;800&display=swap">
+<style>
+:root{--m:#E3165E;--l:#B565D8;--o:#94901F;--ink:#2A1A24;--mute:#8A7480;--soft:#FBF3F7;--lsoft:#F6EEFB;--osoft:#F5F4E4;--line:#F0DCE6}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{font-family:Manrope,system-ui,sans-serif;color:var(--ink);background:#fff;line-height:1.5;font-size:16px;overflow-x:hidden;
+ padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.wrap{max-width:640px;margin:0 auto;padding:22px 18px 60px;position:relative}
+.top{display:flex;gap:8px;flex-wrap:wrap}
+.pill{display:inline-block;border-radius:99px;padding:6px 14px;font-weight:800;font-size:11px;letter-spacing:.06em;color:#fff;
+ background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 50%),linear-gradient(180deg,#FF5C93,var(--m) 55%,#B80E4A);border-bottom:3px solid #9E0C40}
+.pill.l{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 50%),linear-gradient(180deg,#D99BF0,var(--l) 55%,#8E3FB3);border-bottom-color:#6E2C8E}
+.pill.o{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 50%),linear-gradient(180deg,#C2BD3E,var(--o) 55%,#6E6A12);border-bottom-color:#55520C}
+h1{font-family:Unbounded,sans-serif;font-weight:800;font-size:clamp(30px,8.5vw,46px);line-height:1.05;letter-spacing:-.01em;margin:26px 0 14px;max-width:76%}
+h2{font-family:Unbounded,sans-serif;font-weight:800;font-size:clamp(21px,5.6vw,28px);line-height:1.15;margin-bottom:10px}
+h3{font-family:Unbounded,sans-serif;font-weight:600;font-size:16px;margin-bottom:6px}
+.m{color:var(--m)} .lc{color:var(--l)} .oc{color:#6E6A12}
+.lead{font-size:17px;max-width:540px}
+.hero{position:relative}
+.stk{position:absolute;pointer-events:none;animation:float 5s ease-in-out infinite}
+.stk.b{animation-delay:-2s}
+@keyframes float{0%,100%{translate:0 0}50%{translate:0 -8px}}
+.steps{display:flex;gap:6px;margin:22px 0 6px}
+.steps i{flex:1;height:7px;border-radius:99px;background:#F4ECF1;transition:background .4s}
+.steps i.on{background:linear-gradient(90deg,#FF5C93,var(--m))}
+.card{border-radius:24px;padding:22px 20px;background:var(--soft);margin-top:16px}
+.card.l{background:var(--lsoft)} .card.o{background:var(--osoft)} .card.w{background:#fff;border:1.5px solid var(--line)}
+.q{display:none;animation:in .45s cubic-bezier(.2,.8,.2,1)}
+.q.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.qn{font-size:13px;font-weight:800;color:var(--l);letter-spacing:.05em;margin-bottom:6px}
+.opts{display:grid;gap:10px;margin-top:14px}
+.opts.two{grid-template-columns:1fr 1fr}
+.opts.three{grid-template-columns:1fr 1fr 1fr}
+.opt{display:flex;align-items:center;gap:12px;width:100%;text-align:left;font:inherit;font-weight:700;font-size:16px;color:var(--ink);
+ background:#fff;border:2px solid var(--line);border-radius:18px;padding:14px 16px;cursor:pointer;transition:transform .15s,border-color .2s,background .2s}
+.opt:active{transform:scale(.98)}
+.opt .e{font-size:22px;width:30px;text-align:center;flex:none}
+.opt small{display:block;font-weight:500;font-size:13px;color:var(--mute)}
+.opt.big{flex-direction:column;align-items:center;text-align:center;gap:2px;padding:16px 8px}
+.opt.big b{font-family:Unbounded,sans-serif;font-size:26px;color:var(--m)}
+.opt.sel{border-color:var(--m);background:#FFF5F9;box-shadow:0 4px 14px rgba(227,22,94,.15)}
+.opt.sel:not(.big):after{content:"✓";margin-left:auto;width:26px;height:26px;flex:none;border-radius:50%;color:#fff;font-size:14px;display:flex;align-items:center;justify-content:center;
+ background:radial-gradient(circle at 35% 30%,#FF8DB2,var(--m) 70%)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;cursor:pointer;font:inherit;font-weight:800;font-size:16px;color:#fff;text-decoration:none;
+ border-radius:99px;padding:15px 26px;background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 50%),linear-gradient(180deg,#FF5C93,var(--m) 55%,#B80E4A);
+ border-bottom:4px solid #9E0C40;box-shadow:0 6px 16px rgba(227,22,94,.3);transition:transform .15s,opacity .2s}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{opacity:.35;pointer-events:none}
+.btn.l{background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 50%),linear-gradient(180deg,#D99BF0,var(--l) 55%,#8E3FB3);border-bottom-color:#6E2C8E;box-shadow:0 6px 16px rgba(181,101,216,.3)}
+.btn.wide{width:100%}
+.row{display:flex;gap:10px;margin-top:18px;align-items:center}
+.back{white-space:nowrap;background:none;border:0;font:inherit;font-weight:700;color:var(--mute);cursor:pointer;padding:10px 4px}
+input[type=text]{width:100%;font:inherit;font-size:16px;border:2px solid var(--line);border-radius:16px;padding:13px 15px;margin-top:14px;color:var(--ink);background:#fff}
+input:focus{outline:none;border-color:var(--l)}
+.hint{font-size:13px;color:var(--mute);margin-top:6px}
+#result{display:none}
+#result.on{display:block;animation:in .5s cubic-bezier(.2,.8,.2,1)}
+/* неделя */
+#weekCard{background:#fff;border-radius:24px;padding:20px 16px 16px;margin-top:16px;border:1.5px solid var(--line)}
+.wk-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:12px}
+.wk-head small{font-size:12px;color:var(--mute);font-weight:700}
+.day{display:grid;grid-template-columns:46px 1fr;gap:12px;align-items:stretch;margin-top:9px}
+.dn{border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Unbounded,sans-serif;font-weight:800;font-size:15px;color:#fff;
+ background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,0) 50%),linear-gradient(180deg,#FF5C93,var(--m) 60%,#B80E4A);border-bottom:3px solid #9E0C40}
+.day.t .dn{background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,0) 50%),linear-gradient(180deg,#D99BF0,var(--l) 60%,#8E3FB3);border-bottom-color:#6E2C8E}
+.day.s .dn{background:linear-gradient(180deg,rgba(255,255,255,.35),rgba(255,255,255,0) 50%),linear-gradient(180deg,#C2BD3E,var(--o) 60%,#6E6A12);border-bottom-color:#55520C}
+.day.r .dn{background:#F4ECF1;color:#B9A3AF;border-bottom:3px solid #E6D3DD}
+.dc{border-radius:16px;padding:11px 13px;background:var(--soft)}
+.day.t .dc{background:var(--lsoft)} .day.s .dc{background:var(--osoft)} .day.r .dc{background:#FAF7F8;color:var(--mute)}
+.dc .meta{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:12.5px;font-weight:800;margin-bottom:3px}
+.chip{border-radius:99px;padding:2px 9px;background:#fff;color:var(--m)}
+.day.t .chip{color:var(--l)} .day.s .chip{color:#6E6A12}
+.dc .rb{font-weight:800;font-size:15px}
+.dc .tp{font-size:14px;color:#5E4A55}
+.bar{display:flex;height:34px;border-radius:99px;overflow:hidden;margin-top:14px;font-weight:800;font-size:12px;color:#fff;text-align:center;line-height:34px}
+.bar div{transition:flex .5s}
+.leg{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:13px;color:var(--mute);font-weight:700}
+.leg span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:-1px;background:var(--c)}
+.rubs{display:grid;gap:10px;margin-top:12px}
+.rub{background:#fff;border-radius:16px;padding:12px 14px;border:2px solid var(--line)}
+.rub b{display:block}
+.rub span{font-size:13.5px;color:var(--mute)}
+.prompt{white-space:pre-wrap;font-size:14px;line-height:1.5;background:#FCF8FE;border:2px dashed var(--l);border-radius:18px;padding:16px;max-height:220px;overflow:auto;margin-top:14px}
+.ais{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.ai{display:flex;flex-direction:column;align-items:center;gap:4px;text-decoration:none;color:var(--ink);font-weight:800;font-size:13px;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 6px}
+.ai b{font-size:22px}
+.how{counter-reset:s;list-style:none;margin-top:10px}
+.how li{counter-increment:s;position:relative;padding-left:36px;margin:12px 0}
+.how li:before{content:counter(s);position:absolute;left:0;top:-1px;width:25px;height:25px;border-radius:50%;color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;
+ background:radial-gradient(circle at 35% 30%,#FF8DB2,var(--m) 70%)}
+.cmds{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.cmd{font:inherit;text-align:left;cursor:pointer;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px;color:var(--ink);transition:border-color .2s}
+.cmd b{display:block;font-size:14px}
+.cmd span{font-size:12.5px;color:var(--mute)}
+.cmd.ok{border-color:var(--o)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translate(-50%,30px);opacity:0;background:var(--ink);color:#fff;font-weight:700;
+ padding:12px 20px;border-radius:99px;font-size:14px;transition:all .3s;z-index:9;pointer-events:none;white-space:nowrap}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+.foot{text-align:center;font-size:12.5px;color:var(--mute);margin-top:36px}
+.conf{position:fixed;inset:0;pointer-events:none;z-index:8;overflow:hidden}
+.conf i{position:absolute;top:-20px;width:10px;height:14px;border-radius:3px;animation:fall 1.6s ease-in forwards}
+@keyframes fall{to{transform:translateY(110vh) rotate(540deg);opacity:.2}}
+@media (prefers-reduced-motion:reduce){.stk,.conf i{animation:none}.q,#result.on{animation:none}}
+
+.tabs{display:flex;gap:8px;margin-top:22px;background:#F7EEF3;border-radius:99px;padding:5px}
+.tab{flex:1;border:0;font:inherit;font-weight:800;font-size:14px;border-radius:99px;padding:11px 8px;background:none;color:var(--mute);cursor:pointer}
+.tab.on{color:#fff;background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,0) 50%),linear-gradient(180deg,#FF5C93,var(--m) 55%,#B80E4A);border-bottom:3px solid #9E0C40}
+.pane{display:none}.pane.on{display:block;animation:in .4s cubic-bezier(.2,.8,.2,1)}
+textarea{width:100%;font:inherit;font-size:16px;border:2px solid var(--line);border-radius:16px;padding:13px 15px;margin-top:14px;color:var(--ink);background:#fff;resize:none}
+textarea:focus{outline:none;border-color:var(--l)}
+.reel{background:#fff;border:2px solid var(--line);border-radius:18px;padding:12px;margin-top:10px;transition:border-color .3s,background .3s}
+.reel .hd{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.reel .no{width:26px;height:26px;border-radius:50%;flex:none;color:#fff;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 35% 30%,#E6C0F7,var(--l) 70%)}
+.reel input[type=text]{margin:0;padding:10px 12px;font-size:15px;border-radius:12px}
+.nums{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.nums label{font-size:11.5px;font-weight:800;color:var(--mute)}
+.nums input{width:100%;font:inherit;font-size:16px;font-weight:700;border:2px solid var(--line);border-radius:12px;padding:9px 10px;margin-top:3px;background:#fff;color:var(--ink)}
+.nums input:focus{outline:none;border-color:var(--l)}
+.verdict{display:none;margin-top:9px;border-radius:12px;padding:9px 11px;font-size:14px;font-weight:700}
+.reel.done .verdict{display:block}
+.v0{background:#F4ECF1;color:#7A6470}.v1{background:#F6EEFB;color:#7E3FA0}.v2{background:#FDE7EF;color:#B80E4A}.v3{background:#F2F1DA;color:#55520C}
+.reel.win{border-color:var(--m);background:#FFF8FB}
+.crown{display:none;white-space:nowrap;flex:none;margin-left:auto;font-size:11px;font-weight:800;color:#fff;border-radius:99px;padding:3px 10px;background:linear-gradient(180deg,#FF5C93,var(--m) 60%,#B80E4A)}
+.reel.win .crown{display:inline-block}
+.scale{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px;text-align:center}
+.scale div{border-radius:14px;padding:9px 4px;font-size:11.5px;font-weight:700;line-height:1.25}
+.scale b{display:block;font-family:Unbounded,sans-serif;font-size:13px;margin-bottom:2px}
+.tpl{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:12px}
+.tpl div{background:#fff;border:2px solid var(--line);border-radius:14px;padding:10px;font-size:13px;color:var(--mute)}
+.tpl b{display:block;color:var(--ink);font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top"><span class="pill">МЕТОД РОДОЧИНСКОЙ</span><span class="pill l">РОЛЬ 3 · ВОСХОДЯЩАЯ ЗВЕЗДА</span></div>
+  <div class="hero">
+    <svg class="stk" style="right:-8px;top:-4px;width:76px;rotate:-10deg" viewBox="0 0 100 100"><defs><radialGradient id="a" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#FF7BA6"/><stop offset="1" stop-color="#E3165E"/></radialGradient></defs><path d="M50 4l13 29 31 3-23 21 7 31-28-16-28 16 7-31L6 36l31-3z" fill="url(#a)" stroke="#E3165E" stroke-width="1.5" stroke-linejoin="round"/><ellipse cx="38" cy="30" rx="16" ry="8" fill="#fff" opacity=".55" transform="rotate(-25 38 30)"/></svg>
+    <svg class="stk b" style="right:62px;top:-14px;width:34px" viewBox="0 0 100 100"><defs><radialGradient id="b" cx="35%" cy="30%" r="75%"><stop offset="0" stop-color="#E2B6F5"/><stop offset="1" stop-color="#B565D8"/></radialGradient></defs><path d="M50 2c4 26 10 40 46 48-36 8-42 22-46 48-4-26-10-40-46-48 36-8 42-22 46-48z" fill="url(#b)" stroke="#B565D8" stroke-width="1.5"/><ellipse cx="42" cy="34" rx="10" ry="5" fill="#fff" opacity=".55" transform="rotate(-25 42 34)"/></svg>
+    <h1>Лаборатория <span class="m">пробных рилс</span></h1>
+    <p class="lead">Придумай 10 роликов для новых людей за минуту, а через 3 дня узнай, какой заголовок победил. Без гадания «залетит или нет».</p>
+  </div>
+
+  <div class="tabs"><button class="tab on" data-p="gen" type="button">🧪 Генератор</button><button class="tab" data-p="board" type="button">🏆 Табло теста</button></div>
+
+  <!-- ГЕНЕРАТОР -->
+  <div class="pane on" id="gen">
+    <div class="steps" id="steps"><i class="on"></i><i></i><i></i><i></i></div>
+
+    <section class="card q on" data-q="role">
+      <div class="qn">ВОПРОС 1 ИЗ 4</div>
+      <h2>Кто ты в блоге?</h2>
+      <div class="opts">
+        <button class="opt" data-v="эксперт (консультации, услуги, обучение)"><span class="e">🎓</span><span>Эксперт<small>консультации, услуги, обучение</small></span></button>
+        <button class="opt" data-v="мастер (делаю услуги руками)"><span class="e">💅</span><span>Мастер<small>маникюр, фото, торты, ремонт…</small></span></button>
+        <button class="opt" data-v="товарный бизнес"><span class="e">🛍️</span><span>Товарный бизнес<small>продаю товары</small></span></button>
+        <button class="opt" data-v="блогер (реклама, контент для брендов)"><span class="e">📸</span><span>Блогер<small>реклама, контент для брендов</small></span></button>
+      </div>
+    </section>
+
+    <section class="card l q" data-q="fmt">
+      <div class="qn">ВОПРОС 2 ИЗ 4</div>
+      <h2>Как тебе удобнее снимать?</h2>
+      <div class="opts">
+        <button class="opt" data-v="ленивый рилс: подложка без слов (бытовое видео) + заголовок по центру + текст в описании"><span class="e">😴</span><span>Ленивый рилс<small>видео из жизни + заголовок, без слов</small></span></button>
+        <button class="opt" data-v="говорящая голова: говорю в камеру 20–40 секунд"><span class="e">🗣️</span><span>Говорящая голова<small>говорю в камеру</small></span></button>
+        <button class="opt" data-v="оба формата: часть идей ленивыми рилс, часть говорящей головой"><span class="e">🎲</span><span>И так, и так<small>смешаем форматы</small></span></button>
+      </div>
+      <div class="row"><button class="back" type="button">← назад</button></div>
+    </section>
+
+    <section class="card o q" data-q="need">
+      <div class="qn">ВОПРОС 3 ИЗ 4</div>
+      <h2>Что нужно от роликов?</h2>
+      <div class="opts">
+        <button class="opt" data-v="подписки: чтобы новые люди шли в профиль и подписывались"><span class="e">👀</span><span>Подписчики<small>новые люди в профиль</small></span></button>
+        <button class="opt" data-v="заявки: чтобы писали кодовое слово и в директ"><span class="e">💌</span><span>Заявки<small>пишут кодовое слово, в директ</small></span></button>
+        <button class="opt" data-v="охват: чтобы ролики пересылали и смотрели как можно больше людей"><span class="e">🚀</span><span>Охват<small>пересылают, смотрят до конца</small></span></button>
+      </div>
+      <div class="row"><button class="back" type="button">← назад</button></div>
+    </section>
+
+    <section class="card l q" data-q="about">
+      <div class="qn">ВОПРОС 4 ИЗ 4</div>
+      <h2>Чем ты занимаешься и что болит у клиента?</h2>
+      <input type="text" id="about" maxlength="160" placeholder="Чем занимаешься: например, психолог для мам">
+      <textarea id="pain" rows="2" maxlength="300" placeholder="Боль клиента: например, срываюсь на ребёнка и потом виню себя"></textarea>
+      <p class="hint">Можно пропустить, нейросеть сама спросит. Но с болью идеи будут точнее.</p>
+      <div class="row"><button class="back" type="button">← назад</button><button class="btn" type="button" id="make" style="margin-left:auto">Собрать ✨</button></div>
+    </section>
+
+    <section id="result">
+      <div class="card">
+        <span class="pill">10 ИДЕЙ ЗА ТЕБЯ</span>
+        <h2 style="margin-top:14px">Осталось <span class="m">2 касания</span></h2>
+        <ol class="how">
+          <li><b>Скопируй промпт</b> кнопкой ниже.</li>
+          <li><b>Открой нейросеть</b>, вставь в новый чат и отправь. Получишь 10 идей по 10 шаблонам, а потом 5 заголовков для теста.</li>
+        </ol>
+        <button class="btn wide" type="button" id="copy">📋 Скопировать промпт</button>
+        <div class="ais">
+          <a class="ai" href="https://chatgpt.com/" target="_blank" rel="noopener"><b>💬</b>ChatGPT</a>
+          <a class="ai" href="https://chat.deepseek.com/" target="_blank" rel="noopener"><b>🐳</b>DeepSeek</a>
+          <a class="ai" href="https://giga.chat/" target="_blank" rel="noopener"><b>🟢</b>GigaChat</a>
+        </div>
+        <p class="hint" style="margin-top:10px">DeepSeek и GigaChat работают без VPN. Подойдёт и бесплатная версия ChatGPT.</p>
+        <div class="prompt" id="prompt"></div>
+        <button class="back" type="button" id="restart" style="margin-top:6px">↺ Собрать заново</button>
+      </div>
+
+      <div class="card l">
+        <h2>Как выложить <span class="lc">в пробном режиме</span></h2>
+        <ol class="how">
+          <li><b>Один пост, одна подложка, 5 заголовков</b> = 5 пробных рилс.</li>
+          <li>При публикации в Instagram включи <b>пробный режим (Trial reels)</b> в дополнительных настройках. Ролик увидят только те, кто ещё не подписан.</li>
+          <li><b>3 дня ничего не трогай.</b> Потом открой вкладку «Табло теста» и впиши цифры.</li>
+        </ol>
+        <button class="btn l wide" type="button" data-go="board" style="margin-top:6px">🏆 Перейти к табло</button>
+      </div>
+
+      <div class="card o">
+        <h2>Секретные <span class="oc">команды</span></h2>
+        <p>Пиши их нейросети по ходу. Нажми, чтобы скопировать.</p>
+        <div class="cmds">
+          <button class="cmd" type="button" data-c="Перепиши заголовки смелее: больше иронии, парадокса и недосказанности."><b>🌶️ «Смелее»</b><span>если заголовки скучные</span></button>
+          <button class="cmd" type="button" data-c="Перепиши первые 3 секунды этого ролика: 3 варианта хука, которые не дают пролистать."><b>🪝 «Перепиши хук»</b><span>первые 3 секунды</span></button>
+          <button class="cmd" type="button" data-c="Сделай из этой идеи сериал из 3 частей с крючком на продолжение в конце каждой."><b>📺 «Сделай сериал»</b><span>часть 1, 2, 3</span></button>
+          <button class="cmd" type="button" data-c="Предложи 5 подложек из моей обычной жизни, которые подойдут к этому заголовку."><b>🎞 «5 подложек»</b><span>что снять фоном</span></button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <!-- ТАБЛО -->
+  <div class="pane" id="board">
+    <div class="card">
+      <h2>Табло <span class="m">теста</span></h2>
+      <p>Через 3 дня после выкладки впиши цифры каждого пробного рилс из статистики. Табло покажет победителя и что делать с каждым роликом.</p>
+      <div class="scale">
+        <div class="v0"><b>до 300</b>стартовый показ</div>
+        <div class="v1"><b>300+</b>есть интерес</div>
+        <div class="v2"><b>1,5 тыс.</b>уже приятно</div>
+        <div class="v3"><b>3 тыс.+</b>в основную ленту</div>
+      </div>
+      <div id="reels"></div>
+      <button class="btn wide" type="button" id="calc" style="margin-top:14px">🏆 Найти победителя</button>
+    </div>
+    <div class="card l" id="boardOut" style="display:none">
+      <h2>Что дальше</h2>
+      <p id="boardText"></p>
+      <button class="btn l wide" type="button" id="copy2" style="margin-top:14px">📋 Скопировать промпт разбора</button>
+      <p class="hint" style="margin-top:8px">Вставь в ту же нейросеть: она объяснит, почему победил этот заголовок, и предложит следующий раунд.</p>
+      <p class="hint" style="margin-top:12px">📸 Сделай скриншот табло и отправь в «Хвастаюсь» мини-приложения: пока идёт интенсив, за это начисляются баллы.</p>
+    </div>
+  </div>
+
+  <div class="card w" id="cta">
+    <h2>Это 1 шаг из системы. <span class="m">Остальные пройдём вместе</span></h2>
+    <p>На <b>Контент-профи 12.0</b> разбираем дальше: как превращать новых зрителей в подписчиков, а подписчиков в покупателей: воронки, прогрев, кодовые слова и ИИ-команда, которая пишет сценарии и монтирует вместе с тобой. С кураторами, которые ведут за руку.</p>
+    <div id="ctaBox" style="margin-top:16px"></div>
+  </div>
+
+  <p class="foot">Школа по маркетингу и нейросетям Юлии Родочинской</p>
+</div>
+<div class="toast" id="toast"></div>
+<div class="conf" id="conf"></div>
+
+<script>
+/* ===== НАСТРОЙКИ ===== */
+var WAITLIST_URL = "";   // ссылка на лист ожидания, например "https://..."
+var CARE_CONTACT = "";   // контакт отдела заботы, например "@care_rodochinskaya"
+/* ===================== */
+
+function $(id){ return document.getElementById(id); }
+function toast(t){ var e=$("toast"); e.textContent=t; e.classList.add("on"); clearTimeout(e._t); e._t=setTimeout(function(){ e.classList.remove("on"); },2200); }
+function copyText(t,done){
+  function fb(){ var ta=document.createElement("textarea"); ta.value=t; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.opacity="0"; document.body.appendChild(ta);
+    ta.select(); ta.setSelectionRange(0,t.length); var ok=false; try{ ok=document.execCommand("copy"); }catch(e){} document.body.removeChild(ta); done(ok); }
+  if (navigator.clipboard && window.isSecureContext){ navigator.clipboard.writeText(t).then(function(){ done(true); }, fb); } else fb();
+}
+function confetti(){
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  var box=$("conf"), cols=["#E3165E","#B565D8","#94901F","#FF7BA6","#E2B6F5"];
+  for (var i=0;i<60;i++){ var p=document.createElement("i"); p.style.left=Math.random()*100+"%"; p.style.background=cols[i%cols.length];
+    p.style.animationDelay=(Math.random()*.5)+"s"; p.style.animationDuration=(1.2+Math.random()*1.2)+"s"; box.appendChild(p); }
+  setTimeout(function(){ box.innerHTML=""; },3200);
+}
+/* вкладки */
+function tab(p){
+  document.querySelectorAll(".tab").forEach(function(t){ t.classList.toggle("on", t.getAttribute("data-p")===p); });
+  document.querySelectorAll(".pane").forEach(function(x){ x.classList.toggle("on", x.id===p); });
+  window.scrollTo({top:document.querySelector(".tabs").getBoundingClientRect().top+window.pageYOffset-16, behavior:"smooth"});
+}
+document.querySelectorAll(".tab,[data-go]").forEach(function(b){ b.addEventListener("click", function(){ tab(b.getAttribute("data-p")||b.getAttribute("data-go")); }); });
+
+/* генератор */
+var ans={role:"",fmt:"",need:""};
+var qs=Array.prototype.slice.call(document.querySelectorAll(".q")), bars=document.querySelectorAll("#steps i");
+function show(i){ qs.forEach(function(q,k){ q.classList.toggle("on",k===i); }); bars.forEach(function(b,k){ b.classList.toggle("on",k<=i); }); }
+qs.forEach(function(q,i){
+  var key=q.getAttribute("data-q");
+  q.querySelectorAll(".opt").forEach(function(o){ o.addEventListener("click", function(){
+    q.querySelectorAll(".opt").forEach(function(x){ x.classList.remove("sel"); }); o.classList.add("sel"); ans[key]=o.getAttribute("data-v");
+    setTimeout(function(){ show(i+1); },260); }); });
+  var bk=q.querySelector(".back"); if (bk) bk.addEventListener("click", function(){ show(i-1); });
+});
+var TPL="1) частая ошибка («Ты [делаешь X], а зря»); 2) было → стало; 3) миф и правда; 4) вопрос клиента дословно; 5) обращение («Если ты [кто] и у тебя [проблема], смотри»); 6) 3 признака; 7) за кадром (как на самом деле выглядит мой процесс); 8) начало истории («Клиентка пришла ко мне после [чего]…»); 9) неожиданное утверждение («[мой продукт] дешевле, чем [привычная трата]»); 10) POV («POV: ты [ситуация клиента]»)";
+function gen(){
+  var about=$("about").value.trim(), pain=$("pain").value.trim();
+  return "Ты сценарист Reels по Методу Родочинской. Помоги выйти к новым людям через пробные рилс Instagram (их видят только те, кто на меня ещё не подписан).\n\n"+
+  "ОБО МНЕ\n"+(about?"Чем занимаюсь: "+about+".\n":"")+"Кто я в блоге: "+ans.role+".\n"+(pain?"Главная боль моего клиента: "+pain+".\n":"")+
+  "Формат: "+ans.fmt+".\nЧто нужно от роликов: "+ans.need+".\n"+((about&&pain)?"":"Если не хватает данных обо мне или клиенте, сначала задай до 3 коротких вопросов одним сообщением.\n")+
+  "\nШАГ 1. 10 ИДЕЙ\nСделай 10 идей роликов, по одной на каждый шаблон: "+TPL+".\nДля каждой: заголовок на экран до 10 слов (читается за 2 секунды, открывает вопрос, а ответ в ролике или описании); что снять; первые 3 секунды; подпись в 2–3 строки с одним призывом под мою цель. Покажи таблицей.\nВ конце отметь 3 идеи, которые стоит снять первыми, и почему.\n\n"+
+  "ШАГ 2. ТЕСТ ЗАГОЛОВКОВ (когда я выберу идею)\nНапиши к ней 5 разных заголовков для теста: вопрос клиента дословно, частая ошибка, неожиданное утверждение, обращение к человеку, начало мини-истории. К каждому гипотезу: «Если я поставлю этот заголовок, то [досмотры / отправки / подписки] вырастут, потому что [почему]».\n\n"+
+  "ПРАВИЛА\nПросто и живо, на «ты», без клише и пафоса, без слов «уникальный» и «секрет успеха». Не придумывай цифры и истории обо мне: ставь [скобки]. В Instagram не пиши «купи», «скидка», «оплати». Если я пишу «Смелее», «Перепиши хук», «Сделай сериал» или «5 подложек», выполни сразу.";
+}
+var promptText="";
+$("make").addEventListener("click", function(){
+  promptText=gen(); $("prompt").textContent=promptText;
+  qs.forEach(function(q){ q.classList.remove("on"); }); $("steps").style.display="none"; $("result").classList.add("on");
+  window.scrollTo({top:$("result").getBoundingClientRect().top+window.pageYOffset-16,behavior:"smooth"}); confetti();
+});
+$("restart").addEventListener("click", function(){ $("result").classList.remove("on"); $("steps").style.display=""; $("copy").textContent="📋 Скопировать промпт"; show(0); });
+$("copy").addEventListener("click", function(){ var b=this; copyText(promptText,function(ok){ if(ok){ b.textContent="✅ Скопировано! Теперь открой нейросеть"; toast("Промпт скопирован 💖"); } else toast("Выдели текст в рамке и скопируй вручную"); }); });
+document.querySelectorAll(".cmd").forEach(function(c){ c.addEventListener("click", function(){ copyText(c.getAttribute("data-c"), function(ok){ if(ok){ c.classList.add("ok"); toast("Команда скопирована"); } }); }); });
+
+/* табло */
+var rh="";
+for (var i=1;i<=5;i++){
+  rh+='<div class="reel" id="r'+i+'"><div class="hd"><span class="no">'+i+'</span><input type="text" placeholder="Заголовок ролика '+i+'" maxlength="120"><span class="crown">👑 лучший</span></div>'+
+  '<div class="nums"><div><label>Просмотры</label><input type="number" inputmode="numeric" min="0" data-k="v"></div><div><label>Отправки</label><input type="number" inputmode="numeric" min="0" data-k="s"></div><div><label>Подписки</label><input type="number" inputmode="numeric" min="0" data-k="f"></div></div>'+
+  '<div class="verdict"></div></div>';
+}
+$("reels").innerHTML=rh;
+function fmtN(n){ return n.toLocaleString("ru-RU"); }
+var boardPrompt="";
+$("calc").addEventListener("click", function(){
+  var data=[];
+  for (var i=1;i<=5;i++){
+    var r=$("r"+i), g=function(k){ var v=parseInt(r.querySelector('[data-k="'+k+'"]').value,10); return isNaN(v)?null:v; };
+    var o={i:i,el:r,t:r.querySelector('input[type=text]').value.trim()||("Ролик "+i),v:g("v"),s:g("s"),f:g("f")};
+    r.classList.remove("done","win");
+    if (o.v!==null) data.push(o);
+  }
+  if (data.length<2){ toast("Впиши просмотры хотя бы двух роликов"); return; }
+  data.forEach(function(o){
+    var cls,txt;
+    if (o.v<300){ cls="v0"; txt="Стартовый показ, это ещё не результат. Попробуй другой заголовок или первые 2 секунды."; }
+    else if (o.v<1500){ cls="v1"; txt="Есть интерес. Оставь тему, покрути заголовок."; }
+    else if (o.v<3000){ cls="v2"; txt="Уже приятно: тема цепляет. Сними к ней ещё 2–3 подложки."; }
+    else { cls="v3"; txt="Переноси в основную ленту и покажи подписчикам!"; }
+    var parts=[]; if (o.v>0 && o.s!==null) parts.push("отправок на 1 000 просмотров: "+Math.round(o.s/o.v*1000)); if (o.v>0 && o.f!==null) parts.push("подписок на 1 000: "+Math.round(o.f/o.v*1000));
+    var per=parts.length?parts.join(" · "):"";
+    var vd=o.el.querySelector(".verdict"); vd.className="verdict "+cls; vd.textContent=txt; if(per){ var sm=document.createElement("small"); sm.style.cssText="display:block;font-weight:600;opacity:.75;margin-top:3px;font-size:12.5px"; sm.textContent=per; vd.appendChild(sm); }
+    o.el.classList.add("done");
+  });
+  var best=data.slice().sort(function(a,b){ return (b.v-a.v)||((b.s||0)-(a.s||0)); })[0];
+  best.el.classList.add("win");
+  $("boardText").innerHTML="Победил <b>«"+best.t.replace(/</g,"&lt;")+"»</b>: "+fmtN(best.v)+" просмотров. "+(best.v>=3000?"Это уровень основной ленты: покажи его подписчикам, а к заголовку сними новые подложки для следующего раунда.":"Возьми его за основу следующего раунда: тот же заголовок, 3 новые подложки, и снова в пробный режим.");
+  boardPrompt="Я провёл(а) тест пробных рилс Instagram: один пост, одна подложка, разные заголовки. Вот результаты через 3 дня:\n"+
+    data.map(function(o){ return "«"+o.t+"» · просмотры "+o.v+(o.s!==null?" · отправки "+o.s:"")+(o.f!==null?" · подписки "+o.f:""); }).join("\n")+
+    "\n\nРазбери простым языком: почему победил «"+best.t+"»; что общего у слабых заголовков; какой вывод для моего блога одной фразой. Потом предложи следующий раунд: 5 новых заголовков в стиле победителя с гипотезами «Если я поставлю этот заголовок, то [метрика] вырастет, потому что [почему]» и 3 подложки, которые стоит снять. Не придумывай цифры, опирайся только на мои.";
+  $("boardOut").style.display="block";
+  setTimeout(function(){ window.scrollTo({top:best.el.getBoundingClientRect().top+window.pageYOffset-20,behavior:"smooth"}); },100);
+  confetti();
+});
+$("copy2").addEventListener("click", function(){ var b=this; copyText(boardPrompt,function(ok){ if(ok){ b.textContent="✅ Скопировано! Вставь в нейросеть"; toast("Промпт скопирован 💖"); } }); });
+
+(function(){
+  var box=$("ctaBox"), h="";
+  if (WAITLIST_URL) h+='<a class="btn wide" href="'+WAITLIST_URL+'" target="_blank" rel="noopener">Встать в лист ожидания</a>';
+  if (CARE_CONTACT) h+='<p class="hint" style="margin-top:12px;text-align:center">Вопросы? Пиши в отдел заботы: <b>'+CARE_CONTACT+'</b></p>';
+  if (!h) $("cta").style.display="none"; else box.innerHTML=h;
+})();
+</script>
+
+</body>
+</html>
